@@ -1,15 +1,11 @@
 package com.vinu.attendance.controller;
 
 import com.vinu.attendance.model.Attendance;
-import com.vinu.attendance.model.User;
-import com.vinu.attendance.repository.AttendanceRepository;
-import com.vinu.attendance.repository.UserRepository;
+import com.vinu.attendance.service.AttendanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,92 +14,29 @@ import java.util.Map;
 public class AttendanceController {
 
     @Autowired
-    private AttendanceRepository attendanceRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private AttendanceService attendanceService;
 
     // ✅ MARK ATTENDANCE
     @PostMapping("/mark")
-    public Map<String, String> markAttendance(@RequestParam Long userId) {
-
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) {
-            return Map.of("error", "User not found");
-        }
-
-        Attendance attendance = new Attendance();
-        attendance.setUser(user);
-        attendance.setDate(LocalDate.now().toString());
-        attendance.setTime(LocalTime.now().toString());
-        attendance.setStatus("PRESENT");
-
-        attendanceRepository.save(attendance);
-
-        return Map.of("message", "Attendance Marked Successfully");
+    public Map<String, Object> markAttendance(@RequestParam Long userId) {
+        return attendanceService.markAttendanceByUserId(userId);
     }
 
     // ✅ GET ALL ATTENDANCE
     @GetMapping("/all")
     public List<Attendance> getAllAttendance() {
-        return attendanceRepository.findAll();
+        return attendanceService.getAllAttendance();
     }
 
     // ✅ GET ATTENDANCE BY USER
     @GetMapping("/user/{id}")
     public Map<String, Object> getAttendanceByUser(@PathVariable Long id) {
-
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            return Map.of("error", "User not found");
-        }
-
-        List<Attendance> list = attendanceRepository.findByUser(user);
-
-        return Map.of(
-                "userId", id,
-                "records", list
-        );
+        return attendanceService.getAttendanceByUser(id);
     }
 
     // ✅ ATTENDANCE PERCENTAGE
     @GetMapping("/percentage/{id}")
     public Map<String, Object> getAttendancePercentage(@PathVariable Long id) {
-
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user == null) {
-            return Map.of("error", "User not found");
-        }
-
-        List<Attendance> list = attendanceRepository.findByUser(user);
-
-        if (list.isEmpty()) {
-            return Map.of(
-                    "userId", id,
-                    "percentage", 0,
-                    "message", "No attendance records"
-            );
-        }
-
-        int total = list.size();
-        int present = 0;
-
-        for (Attendance a : list) {
-            if ("PRESENT".equalsIgnoreCase(a.getStatus())) {
-                present++;
-            }
-        }
-
-        double percentage = (present * 100.0) / total;
-
-        return Map.of(
-                "userId", id,
-                "totalDays", total,
-                "presentDays", present,
-                "percentage", percentage
-        );
+        return attendanceService.getAttendancePercentage(id);
     }
 }
