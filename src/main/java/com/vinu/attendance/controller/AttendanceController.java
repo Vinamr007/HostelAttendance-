@@ -62,6 +62,8 @@ public class AttendanceController {
         return attendanceRepository.findByUser(user);
     }
 
+
+
     // ✅ ATTENDANCE PERCENTAGE
     @GetMapping("/percentage/{id}")
     public String getAttendancePercentage(@PathVariable Long id) {
