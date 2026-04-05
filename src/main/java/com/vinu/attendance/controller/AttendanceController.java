@@ -1,5 +1,8 @@
 package com.vinu.attendance.controller;
 
+import com.vinu.attendance.dto.AttendanceListResponse;
+import com.vinu.attendance.dto.AttendanceResponse;
+import com.vinu.attendance.dto.MarkAttendanceResponse;
 import com.vinu.attendance.model.Attendance;
 import com.vinu.attendance.service.AttendanceService;
 
@@ -18,7 +21,7 @@ public class AttendanceController {
 
     // ✅ MARK ATTENDANCE
     @PostMapping("/mark")
-    public Map<String, Object> markAttendance(@RequestParam Long userId) {
+    public MarkAttendanceResponse markAttendance(@RequestParam Long userId) {
         return attendanceService.markAttendanceByUserId(userId);
     }
 
@@ -30,13 +33,13 @@ public class AttendanceController {
 
     // ✅ GET ATTENDANCE BY USER
     @GetMapping("/user/{id}")
-    public Map<String, Object> getAttendanceByUser(@PathVariable Long id) {
+    public AttendanceListResponse getAttendanceByUser(@PathVariable Long id) {
         return attendanceService.getAttendanceByUser(id);
     }
 
     // ✅ ATTENDANCE PERCENTAGE
     @GetMapping("/percentage/{id}")
-    public Map<String, Object> getAttendancePercentage(@PathVariable Long id) {
+    public AttendanceResponse getAttendancePercentage(@PathVariable Long id) {
         return attendanceService.getAttendancePercentage(id);
     }
 }
